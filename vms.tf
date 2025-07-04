@@ -38,10 +38,27 @@ resource "nutanix_virtual_machine" "client" {
     destination = "/tmp/setup.sh"    # Destination path on the VM
   }
 
+  provisioner "file" {
+    source      = "scripts/gencerts.sh" # Path to the certificate generation script
+    destination = "/tmp/gencerts.sh"    # Destination path on the VM
+  }
+
+  provisioner "file" {
+    source      = "scripts/env.sh" # Environment variables for the script
+    destination = "/tmp/env.sh"    # Destination path for environment variables
+  }
+
+  provisioner "file" {
+    source      = "misc/conf/${each.key}/swanctl.conf" # Path to the specific swanctl configuration file
+    destination = "/etc/swanctl/swanctl.conf"          # Destination path on the VM
+  }
+
   provisioner "remote-exec" {
     inline = [
-      "chmod +x /tmp/setup.sh", # Make the script executable
-      "bash /tmp/setup.sh"      # Execute the setup script
+      "export HOSTNAME=${each.key}", # Set the hostname variable
+      "export ROLE=client",          # Set the role to client
+      "chmod +x /tmp/setup.sh",      # Make the script executable
+      "bash /tmp/setup.sh"           # Execute the setup script
     ]
   }
 }
@@ -93,10 +110,27 @@ resource "nutanix_virtual_machine" "gateway" {
     destination = "/tmp/setup.sh"    # Destination path on the VM
   }
 
+  provisioner "file" {
+    source      = "scripts/env.sh" # Environment variables for the script
+    destination = "/tmp/env.sh"    # Destination path for environment variables
+  }
+
+  provisioner "file" {
+    source      = "scripts/gencerts.sh" # Path to the certificate generation script
+    destination = "/tmp/gencerts.sh"    # Destination path on the VM
+  }
+
+  provisioner "file" {
+    source      = "misc/conf/${each.key}/swanctl.conf" # Path to the specific swanctl configuration file
+    destination = "/etc/swanctl/swanctl.conf"          # Destination path on the VM
+  }
+
   provisioner "remote-exec" {
     inline = [
-      "chmod +x /tmp/setup.sh", # Make the script executable
-      "bash /tmp/setup.sh"      # Execute the setup script
+      "export HOSTNAME=${each.key}", # Set the hostname variable
+      "export ROLE=gateway",         # Set the role to gateway
+      "chmod +x /tmp/setup.sh",      # Make the script executable
+      "bash /tmp/setup.sh"           # Execute the setup script
     ]
   }
 }
