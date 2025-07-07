@@ -6,8 +6,11 @@
 
 CSR_DIR="/tmp/csr_inbox"
 SIGNED_DIR="/tmp/signed"
-CA_KEY="/etc/swanctl/private/caKey.pem"
-CA_CERT="/etc/swanctl/x509ca/caCert.pem"
+# CA_KEY="/etc/swanctl/private/caKey.pem" # This path to the CA key requires root access
+# CA_CERT="/etc/swanctl/x509ca/caCert.pem" # This path to the CA cert requires root access
+# Use a temporary path for the CA cert to avoid permission issues
+CA_KEY="/tmp/ca/caKey.pem"
+CA_CERT="/tmp/ca/caCert.pem"
 
 mkdir -p "$CSR_DIR" "$SIGNED_DIR"
 
@@ -38,9 +41,10 @@ while true; do
         --serial 01 --lifetime 1826 --outform pem > "$crt"
     if [ $? -eq 0 ]; then
       echo "    Issued certificate: $crt"
-      rm -f "$csr"  # Remove the CSR after successful signing
     else
       echo "    Failed to issue certificate for $csr"
     fi
+    rm -f "$csr"  # Remove the CSR
+    echo "    Removed CSR: $csr"
   done
 done

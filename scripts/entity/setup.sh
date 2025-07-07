@@ -20,19 +20,22 @@ fi
 # Generate the certificate signing request (CSR) and private key
 echo "Generating certificate signing request (CSR) and private key..." >> /tmp/setup.log
 chmod +x /tmp/gencerts.sh
-bash /tmp/gencerts.sh
+source /tmp/gencerts.sh # 
 
 # Create ssh key pair for CA VM
 echo "Creating SSH key pair for CA VM..." >> /tmp/setup.log
+if [ -f "$ssh_key_path" ]; then
+    rm -f "$ssh_key_path" "$ssh_key_path.pub"
+fi
 ssh-keygen -t rsa -b 4096 -N "" -f "$ssh_key_path" -C "${deployment_username}@${ca_vm_ip}"
 
 # Copy the entity's ssh public key into the CA VM (automated with sshpass)
 echo "Copying SSH public key to CA VM..." >> /tmp/setup.log
-sshpass -p "$ca_vm_password" ssh-copy-id -i "${ssh_key_path}.pub" "${deployment_username}@${ca_vm_ip}"
+sshpass -p "$ca_vm_password" ssh-copy-id -o StrictHostKeyChecking=no -i "${ssh_key_path}.pub" "${deployment_username}@${ca_vm_ip}"
 
 # Upload the CSR file using SFTP
 echo "Uploading CSR file to CA VM..." >> /tmp/setup.log
-sftp -i "$ssh_key_path" "${deployment_username}@${ca_vm_ip}" <<EOF
+sftp -o StrictHostKeyChecking=no -i "$ssh_key_path" "${deployment_username}@${ca_vm_ip}" <<EOF
 put $local_csr_path $remote_csr_path
 EOF
 
@@ -42,7 +45,7 @@ attempt=1
 poll_interval=2
 echo "Waiting for entity certificate to appear on CA VM..." >> /tmp/setup.log
 while true; do
-    sftp -i "$ssh_key_path" "${deployment_username}@${ca_vm_ip}" <<EOF | grep -q "$(basename $remote_entity_crt_path)"
+    sftp -o StrictHostKeyChecking=no -i "$ssh_key_path" "${deployment_username}@${ca_vm_ip}" <<EOF | grep -q "$(basename $remote_entity_crt_path)"
 ls $(dirname $remote_entity_crt_path)
 EOF
     if [ $? -eq 0 ]; then
@@ -60,33 +63,20 @@ done
 
 # Get the entity cert and CA cert using SFTP
 echo "Getting entity certificate and CA certificate from CA VM..." >> /tmp/setup.log
-sftp -i "$ssh_key_path" "${deployment_username}@${ca_vm_ip}" <<EOF
+sftp -o StrictHostKeyChecking=no -i "$ssh_key_path" "${deployment_username}@${ca_vm_ip}" <<EOF
 get $remote_entity_crt_path $local_entity_crt_path
 get $remote_ca_crt_path $local_ca_crt_path
 EOF
-
-# Check if there is more than one network adapter (excluding loopback)
-# num_adapters=$(ip -o link show | awk -F': ' '{print $2}' | grep -v '^lo$' | wc -l)
-# if [ "$num_adapters" -gt 1 ]; then
-#     echo "More than one network adapter detected ($num_adapters adapters). Setting ROLE=gateway." >> /tmp/setup.log
-#     export ROLE=gateway
-# else
-#     echo "One or zero network adapters detected. Setting ROLE=client." >> /tmp/setup.log
-#     export ROLE=client
-# fi
-
-# TODO: Get the VPN configuration files from the CA VM
-
 
 # Load all configuration files
 swanctl --load-all
 
 # If this is a client instance, initiate the 'home' child
-wait_time=2
-if [ "$ROLE" = "client" ]; then
-  echo "ROLE=client -- initiating home child" >> /tmp/setup.log
-  sleep $wait_time
-  swanctl --initiate --child home
-else
-  echo "ROLE=$ROLE -- skipping initiate" >> /tmp/setup.log
-fi
+# wait_time=2
+# if [ "$ROLE" = "client" ]; then
+#   echo "ROLE=client -- initiating home child" >> /tmp/setup.log
+#   sleep $wait_time
+#   #swanctl --initiate --child home
+# else
+#   echo "ROLE=$ROLE -- skipping initiate" >> /tmp/setup.log
+# fi

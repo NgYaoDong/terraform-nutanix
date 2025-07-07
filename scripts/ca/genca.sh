@@ -2,8 +2,16 @@
 set -e # Exit immediately if a command exits with a non-zero status
 
 # Initialize variables for CA key and certificate paths
-key_file="/etc/swanctl/private/caKey.pem"
-cert_file="/etc/swanctl/x509ca/caCert.pem"
+# key_file="/etc/swanctl/private/caKey.pem" # This path requires root access
+# cert_file="/etc/swanctl/x509ca/caCert.pem" # This path requires root access
+# Use a temporary path for the CA key and cert to avoid permission issues
+key_file="/tmp/ca/caKey.pem"
+cert_file="/tmp/ca/caCert.pem"
+
+# Ensure the directory exists
+if [ ! -d "$(dirname "$key_file")" ]; then
+    mkdir -p "$(dirname "$key_file")"
+fi
 
 echo "Begin generation of CA key and certificate..."
 
