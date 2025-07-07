@@ -20,34 +20,40 @@ This project automates the deployment of a network of Strongswan VPNs in a Nutan
 
 1. **Clone the repository**
 
-2. **Configure variables**
+2. **Set up the CA**
+   
+   Follow the instructions in [`scripts/ca/`](scripts/ca/) to set up the CA properly.
+
+4. **Configure variables**
 
    Create a `terraform.tfvars` file with your Nutanix environment details and desired VM counts.
 
    Example:
 
    ```hcl
-   nutanix_endpoint = <your-nutanix-endpoint>
-   nutanix_username = <your-nutanix-username>
-   nutanix_password = <your-nutanix-password>
-   nutanix_cluster_name = "strongswan-terraform"
-   nutanix_internet_subnet_name = "Internet"
-   nutanix_intranet_subnet_name = "Intranet"
-   nutanix_image_name = "strongswan-alpine"
-   num_clients  = 2
-   num_gateways = 2
-   ssh_username = "root"
-   ssh_password = "password"
+   nutanix_endpoint = <your-nutanix-endpoint>       # Prism Element endpoint
+   nutanix_username = <your-nutanix-username>       # Prism Element username
+   nutanix_password = <your-nutanix-password>       # Prism Element password
+   nutanix_cluster_name = "strongswan-terraform"    # Name of the Nutanix cluster
+   nutanix_internet_subnet_name = "Internet"        # Name of the internet subnet
+   nutanix_intranet_subnet_name = "Intranet"        # Name of the intranet subnet
+   nutanix_image_name = "strongswan-alpine"         # Name of the VM image to use
+   num_clients  = 2                                 # Number of client VMs to create
+   num_gateways = 2                                 # Number of gateway VMs to create
+   ssh_username = "root"                            # SSH username for client/gateway VMs
+   ssh_password = "password"                        # SSH password for client/gateway VMs
    ```
 
-3. **Initialize and apply Terraform**
+   Edit the `client_ips`, `gateway_internet_ips` and `gateway_intranet_ips` in the [`locals.tf`](locals.tf) file to configure your desired IP address range.
+
+5. **Initialize and apply Terraform**
 
    ```bash
    terraform init
    terraform apply
    ```
 
-4. **Post-deployment**
+6. **Post-deployment**
 
    - The [`setup.sh`](scripts/entity/setup.sh) script in [`scripts/entity`](scripts/entity/) is automatically copied and executed on each VM to configure Strongswan and VPN certificates.
    - Ensure `env.sh` in [`scripts/entity`](scripts/entity/) is configured with the correct environment variables for certificate setup.
