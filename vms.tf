@@ -28,34 +28,34 @@ resource "nutanix_virtual_machine" "client" {
 
   connection {
     type     = "ssh"                      # Connection type
-    host     = local.client_ips[each.key] # Use the assigned IP
+    host     = local.client_ips[self.name] # Use the assigned IP
     user     = var.ssh_username           # SSH user
     password = var.ssh_password           # SSH password
   }
 
   provisioner "file" {
-    source      = "scripts/setup.sh" # Path to the setup script
+    source      = "scripts/entity/setup.sh" # Path to the setup script
     destination = "/tmp/setup.sh"    # Destination path on the VM
   }
 
   provisioner "file" {
-    source      = "scripts/gencerts.sh" # Path to the certificate generation script
-    destination = "/tmp/gencerts.sh"    # Destination path on the VM
-  }
-
-  provisioner "file" {
-    source      = "scripts/env.sh" # Environment variables for the script
+    source      = "scripts/entity/env.sh" # Environment variables for the script
     destination = "/tmp/env.sh"    # Destination path for environment variables
   }
 
   provisioner "file" {
-    source      = "misc/conf/${each.key}/swanctl.conf" # Path to the specific swanctl configuration file
+    source      = "scripts/entity/gencerts.sh" # Path to the certificate generation script
+    destination = "/tmp/gencerts.sh"    # Destination path on the VM
+  }
+
+  provisioner "file" {
+    source      = "misc/conf/${self.name}/swanctl.conf" # Path to the specific swanctl configuration file
     destination = "/etc/swanctl/swanctl.conf"          # Destination path on the VM
   }
 
   provisioner "remote-exec" {
     inline = [
-      "export HOSTNAME=${each.key}", # Set the hostname variable
+      "export HOSTNAME=${self.name}", # Set the hostname variable
       "export ROLE=client",          # Set the role to client
       "chmod +x /tmp/setup.sh",      # Make the script executable
       "bash /tmp/setup.sh"           # Execute the setup script
@@ -90,6 +90,7 @@ resource "nutanix_virtual_machine" "gateway" {
       type = "ASSIGNED"                           # Default type for assigned IPs
     }
   }
+
   nic_list {
     subnet_uuid = local.intranet_subnet_uuid # Attach to intranet subnet
     ip_endpoint_list {
@@ -100,34 +101,34 @@ resource "nutanix_virtual_machine" "gateway" {
 
   connection {
     type     = "ssh"                                # Connection type
-    host     = local.gateway_internet_ips[each.key] # Use the assigned internet IP
+    host     = local.gateway_internet_ips[self.name] # Use the assigned internet IP
     user     = var.ssh_username                     # SSH user
     password = var.ssh_password                     # SSH password
   }
 
   provisioner "file" {
-    source      = "scripts/setup.sh" # Path to the setup script
+    source      = "scripts/entity/setup.sh" # Path to the setup script
     destination = "/tmp/setup.sh"    # Destination path on the VM
   }
 
   provisioner "file" {
-    source      = "scripts/env.sh" # Environment variables for the script
+    source      = "scripts/entity/env.sh" # Environment variables for the script
     destination = "/tmp/env.sh"    # Destination path for environment variables
   }
 
   provisioner "file" {
-    source      = "scripts/gencerts.sh" # Path to the certificate generation script
+    source      = "scripts/entity/gencerts.sh" # Path to the certificate generation script
     destination = "/tmp/gencerts.sh"    # Destination path on the VM
   }
 
   provisioner "file" {
-    source      = "misc/conf/${each.key}/swanctl.conf" # Path to the specific swanctl configuration file
+    source      = "misc/conf/${self.name}/swanctl.conf" # Path to the specific swanctl configuration file
     destination = "/etc/swanctl/swanctl.conf"          # Destination path on the VM
   }
 
   provisioner "remote-exec" {
     inline = [
-      "export HOSTNAME=${each.key}", # Set the hostname variable
+      "export HOSTNAME=${self.name}", # Set the hostname variable
       "export ROLE=gateway",         # Set the role to gateway
       "chmod +x /tmp/setup.sh",      # Make the script executable
       "bash /tmp/setup.sh"           # Execute the setup script

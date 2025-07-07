@@ -1,3 +1,7 @@
+## This script watches a directory for new Certificate Signing Requests (CSRs),
+## signs them using a CA key and certificate, and outputs the signed certificates
+## to a specified directory. It uses inotifywait to monitor the directory for changes.
+
 #!/bin/bash
 
 CSR_DIR="/tmp/csr_inbox"

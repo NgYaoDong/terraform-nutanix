@@ -1,3 +1,6 @@
+## This script sets up a strongSwan VPN client or gateway by generating certificates,
+## creating SSH keys, and uploading the necessary files to a CA VM.
+
 #!/bin/bash
 
 # Source variables from external file if it exists
