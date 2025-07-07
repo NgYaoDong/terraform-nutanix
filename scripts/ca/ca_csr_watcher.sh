@@ -8,7 +8,7 @@ CSR_DIR="/tmp/csr_inbox"
 SIGNED_DIR="/tmp/signed"
 # CA_KEY="/etc/swanctl/private/caKey.pem" # This path to the CA key requires root access
 # CA_CERT="/etc/swanctl/x509ca/caCert.pem" # This path to the CA cert requires root access
-# Use a temporary path for the CA cert to avoid permission issues
+# Use a temporary path for the CA key and cert to avoid permission issues
 CA_KEY="/tmp/ca/caKey.pem"
 CA_CERT="/tmp/ca/caCert.pem"
 
@@ -33,7 +33,6 @@ while true; do
       cert_name="${base/Req/Cert}"
     fi
     crt="$SIGNED_DIR/$cert_name"  # Full path for the signed certificate
-    # Always process the CSR, even if a cert with the same name exists (to allow renewal/overwrite)
     echo "  Processing $csr..."
     # Issue the certificate using the CA key and cert, output to the new cert file
     pki --issue --cacert "$CA_CERT" --cakey "$CA_KEY" \
