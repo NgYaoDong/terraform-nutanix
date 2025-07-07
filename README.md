@@ -22,7 +22,7 @@ This project automates the deployment of a network of Strongswan VPNs in a Nutan
 
 2. **Configure variables**
 
-   Edit `terraform.tfvars` with your Nutanix environment details and desired VM counts.
+   Create a `terraform.tfvars` file with your Nutanix environment details and desired VM counts.
 
    Example:
 
@@ -49,12 +49,12 @@ This project automates the deployment of a network of Strongswan VPNs in a Nutan
 
 4. **Post-deployment**
 
-   - The `setup.sh` script in `scripts/` is automatically copied and executed on each VM to configure Strongswan and VPN certificates.
-   - Ensure `env.sh` in `scripts/` is configured with the correct environment variables for certificate setup.
+   - The [`setup.sh`](scripts/entity/setup.sh) script in [`scripts/entity`](scripts/entity/) is automatically copied and executed on each VM to configure Strongswan and VPN certificates.
+   - Ensure `env.sh` in [`scripts/entity`](scripts/entity/) is configured with the correct environment variables for certificate setup.
 
 ## Variables
 
-See `variables.tf` for all configurable variables:
+See [`variables.tf`](variables.tf) for all configurable variables:
 
 - `nutanix_endpoint`, `nutanix_username`, `nutanix_password`
 - `nutanix_cluster_name`, `nutanix_internet_subnet_name`, `nutanix_intranet_subnet_name`, `nutanix_image_name`
@@ -63,20 +63,38 @@ See `variables.tf` for all configurable variables:
 
 ## File Structure
 
-- `providers.tf` – Provider configuration
-- `data.tf` – Data sources for cluster, subnets, and image
-- `locals.tf` – Local values for dynamic resource creation
-- `vms.tf` – VM resource definitions
-- `variables.tf` – Input variables
-- `terraform.tfvars` – User-specific variable values
-- `scripts/` – Shell scripts for VM provisioning
-- `ref/` – Reference scripts and documentation
+- [`providers.tf`](providers.tf) – Provider configuration
+- [`data.tf`](data.tf) – Data sources for cluster, subnets, and image
+- [`locals.tf`](locals.tf) – Local values for dynamic resource creation
+- [`vms.tf`](vms.tf) – VM resource definitions
+- [`variables.tf`](variables.tf) – Input variables
+- [`terraform.tfvars`](terraform.tfvars) – User-specific variable values
+- [`scripts/`](scripts/) – Shell scripts for VM provisioning
+  - [`README.md`](scripts/README.md)
+  - [`ca/`](scripts/ca/) – Certificate Authority scripts
+    - [`ca_csr_watcher.sh`](scripts/ca/ca_csr_watcher.sh)
+    - [`genca.sh`](scripts/ca/genca.sh)
+  - [`entity/`](scripts/entity/) – Entity (client/gateway) setup scripts
+    - [`env.sh`](scripts/entity/env.sh)
+    - [`gencerts.sh`](scripts/entity/gencerts.sh)
+    - [`setup.sh`](scripts/entity/setup.sh)
+- [`misc/`](misc/) – Miscellaneous configuration and reference files
+  - [`conf/`](misc/conf/)
+    - [`README.md`](misc/conf/README.md)
+    - [`client1/swanctl.conf`](misc/conf/client1/swanctl.conf)
+    - [`client2/swanctl.conf`](misc/conf/client2/swanctl.conf)
+    - [`client3/swanctl.conf`](misc/conf/client3/swanctl.conf)
+    - [`gateway1/swanctl.conf`](misc/conf/gateway1/swanctl.conf)
+    - [`gateway2/swanctl.conf`](misc/conf/gateway2/swanctl.conf)
+  - [`ref/`](misc/ref/)
+    - [`main.tf`](misc/ref/main.tf)
+    - [`README.md`](misc/ref/README.md)
 
 ## Notes
 
-- Sensitive data (passwords, etc.) should not be committed to version control. See `.gitignore` for excluded files.
-- The `setup.sh` script expects an `env.sh` file with required environment variables.
+- Sensitive data (passwords, etc.) should not be committed to version control. See [`.gitignore`](.gitignore) for excluded files.
+- The [`setup.sh`](scripts/entity/setup.sh) script expects an `env.sh` file with required environment variables.
 
 ## References
 
-- See `scripts/README.md` and `ref/README.md` for more details on scripts and reference materials.
+- See [`scripts/README.md`](scripts/README.md) and [`misc/ref/README.md`](misc/ref/README.md) for more details on scripts and reference materials.
