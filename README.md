@@ -24,16 +24,16 @@ This project automates the deployment of a network of Strongswan VPNs in a Nutan
    
    Follow the instructions in [`scripts/ca/`](scripts/ca/) to set up the CA properly.
 
-4. **Configure variables**
+3. **Configure variables**
 
    Create a `terraform.tfvars` file with your Nutanix environment details and desired VM counts.
 
    Example:
 
    ```hcl
-   nutanix_endpoint = <your-nutanix-endpoint>       # Prism Element endpoint
-   nutanix_username = <your-nutanix-username>       # Prism Element username
-   nutanix_password = <your-nutanix-password>       # Prism Element password
+   nutanix_endpoint = "<your-nutanix-endpoint>"     # Prism Element endpoint
+   nutanix_username = "<your-nutanix-username>"     # Prism Element username
+   nutanix_password = "<your-nutanix-password>"     # Prism Element password
    nutanix_cluster_name = "strongswan-terraform"    # Name of the Nutanix cluster
    nutanix_internet_subnet_name = "Internet"        # Name of the internet subnet
    nutanix_intranet_subnet_name = "Intranet"        # Name of the intranet subnet
@@ -46,6 +46,31 @@ This project automates the deployment of a network of Strongswan VPNs in a Nutan
 
    Edit the `client_ips`, `gateway_internet_ips` and `gateway_intranet_ips` in the [`locals.tf`](locals.tf) file to configure your desired IP address range.
 
+4. **Deployment preparation**
+
+   - The [`setup.sh`](scripts/entity/setup.sh) script in [`scripts/entity`](scripts/entity/) is automatically copied and executed on each VM to configure Strongswan and VPN certificates.
+   - Ensure `env.sh` in [`scripts/entity`](scripts/entity/) is configured with the correct environment variables for certificate setup.
+  
+   Example:
+
+   ```bash
+   # Environment variables for setup.sh
+   deployment_username="<your-ca-vm-username>"
+   ca_vm_ip="<your-ca-vm-endpoint>"
+
+   local_csr_path="/tmp/${HOSTNAME}Req.pem"
+   remote_csr_path="/tmp/csr_inbox/${HOSTNAME}Req.pem"
+
+   local_entity_crt_path="/etc/swanctl/x509/${HOSTNAME}Cert.pem"
+   remote_entity_crt_path="/tmp/signed/${HOSTNAME}Cert.pem"
+
+   local_ca_crt_path="/etc/swanctl/x509ca/caCert.pem"
+   remote_ca_crt_path="/tmp/ca/caCert.pem"
+
+   ssh_key_path="$HOME/.ssh/id_rsa_entity"
+   ca_vm_password="<your-ca-vm-password>"
+   ```
+
 5. **Initialize and apply Terraform**
 
    ```bash
@@ -53,10 +78,6 @@ This project automates the deployment of a network of Strongswan VPNs in a Nutan
    terraform apply
    ```
 
-6. **Post-deployment**
-
-   - The [`setup.sh`](scripts/entity/setup.sh) script in [`scripts/entity`](scripts/entity/) is automatically copied and executed on each VM to configure Strongswan and VPN certificates.
-   - Ensure `env.sh` in [`scripts/entity`](scripts/entity/) is configured with the correct environment variables for certificate setup.
 
 ## Variables
 
