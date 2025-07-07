@@ -20,7 +20,7 @@ fi
 # Generate the certificate signing request (CSR) and private key
 echo "Generating certificate signing request (CSR) and private key..." >> /tmp/setup.log
 chmod +x /tmp/gencerts.sh
-source /tmp/gencerts.sh # 
+source /tmp/gencerts.sh # Use source so any variables/functions set in gencerts.sh are available in this script
 
 # Create ssh key pair for CA VM
 echo "Creating SSH key pair for CA VM..." >> /tmp/setup.log
@@ -68,15 +68,6 @@ get $remote_entity_crt_path $local_entity_crt_path
 get $remote_ca_crt_path $local_ca_crt_path
 EOF
 
-# Load all configuration files
+# Load all configuration files and start the connection
+echo "Loading configuration files and starting the connection..." >> /tmp/setup.log
 swanctl --load-all
-
-# If this is a client instance, initiate the 'home' child
-# wait_time=2
-# if [ "$ROLE" = "client" ]; then
-#   echo "ROLE=client -- initiating home child" >> /tmp/setup.log
-#   sleep $wait_time
-#   #swanctl --initiate --child home
-# else
-#   echo "ROLE=$ROLE -- skipping initiate" >> /tmp/setup.log
-# fi
