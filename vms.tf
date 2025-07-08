@@ -7,7 +7,7 @@ resource "nutanix_virtual_machine" "client" {
   num_sockets          = 1                         # Number of sockets
   memory_size_mib      = 512                       # Memory in MiB
 
-  depends_on = [ 
+  depends_on = [
     nutanix_virtual_machine.gateway # Ensure gateway VMs are created first
   ]
 
@@ -60,9 +60,9 @@ resource "nutanix_virtual_machine" "client" {
   provisioner "remote-exec" {
     inline = [
       "export HOSTNAME=${self.name}", # Set the hostname variable
-      "export ROLE=client",          # Set the role to client
-      "chmod +x /tmp/setup.sh",      # Make the script executable
-      "bash /tmp/setup.sh"           # Execute the setup script
+      "export ROLE=client",           # Set the role to client
+      "chmod +x /tmp/setup.sh",       # Make the script executable
+      "bash /tmp/setup.sh"            # Execute the setup script
     ]
   }
 }
@@ -112,30 +112,30 @@ resource "nutanix_virtual_machine" "gateway" {
 
   provisioner "file" {
     source      = "scripts/entity/setup.sh" # Path to the setup script
-    destination = "/tmp/setup.sh"    # Destination path on the VM
+    destination = "/tmp/setup.sh"           # Destination path on the VM
   }
 
   provisioner "file" {
     source      = "scripts/entity/env.sh" # Environment variables for the script
-    destination = "/tmp/env.sh"    # Destination path for environment variables
+    destination = "/tmp/env.sh"           # Destination path for environment variables
   }
 
   provisioner "file" {
     source      = "scripts/entity/gencerts.sh" # Path to the certificate generation script
-    destination = "/tmp/gencerts.sh"    # Destination path on the VM
+    destination = "/tmp/gencerts.sh"           # Destination path on the VM
   }
 
   provisioner "file" {
     source      = "misc/conf/${self.name}/swanctl.conf" # Path to the specific swanctl configuration file
-    destination = "/etc/swanctl/swanctl.conf"          # Destination path on the VM
+    destination = "/etc/swanctl/swanctl.conf"           # Destination path on the VM
   }
 
   provisioner "remote-exec" {
     inline = [
       "export HOSTNAME=${self.name}", # Set the hostname variable
-      "export ROLE=gateway",         # Set the role to gateway
-      "chmod +x /tmp/setup.sh",      # Make the script executable
-      "bash /tmp/setup.sh"           # Execute the setup script
+      "export ROLE=gateway",          # Set the role to gateway
+      "chmod +x /tmp/setup.sh",       # Make the script executable
+      "bash /tmp/setup.sh"            # Execute the setup script
     ]
   }
 }
