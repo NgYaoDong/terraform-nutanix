@@ -68,6 +68,11 @@ get $remote_entity_crt_path $local_entity_crt_path
 get $remote_ca_crt_path $local_ca_crt_path
 EOF
 
-# Load all configuration files and start the connection
-echo "Loading configuration files and starting the connection..." >> /tmp/setup.log
-swanctl --load-all
+# Check if the connection is already established
+if swanctl --list-sas | grep -q "home"; then
+    echo "Connection 'home' already established. Skipping swanctl --load-all." >> /tmp/setup.log
+else
+    # Load the configuration files and start the connection
+    echo "Loading configuration files and starting the connection..." >> /tmp/setup.log
+    swanctl --load-all
+fi

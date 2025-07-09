@@ -27,4 +27,5 @@ pki --self --ca --lifetime 3652 --in $key_file \
            --outform pem > $cert_file
 
 # Print completion message
-echo "CA key and certificate generated and copied to x509ca directory."
+echo "CA key generated in $key_file."
+echo "CA certificate generated generated in $cert_file."

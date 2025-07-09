@@ -25,4 +25,5 @@ pki --req --type priv --in "$key_file" \
     --dn "$dn" --san "$san" --outform pem > "$req_file"
 
 # Print completion message
-echo "Keys and certificate requests generated." >> /tmp/setup.log
+echo "Key generated in $key_file." >> /tmp/setup.log
+echo "Certificate request generated in $req_file." >> /tmp/setup.log
