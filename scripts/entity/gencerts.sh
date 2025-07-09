@@ -1,8 +1,9 @@
+#!/bin/bash
+
 ## This script generates keys and certificate requests for strongSwan.
 ## It creates a private key and a certificate signing request (CSR) using the strongSwan
 ## PKI tool. The generated files are stored in specified directories.
 
-#!/bin/bash
 set -e  # Exit immediately if a command exits with a non-zero status
 
 # Initialize paths for key and certificate requests
