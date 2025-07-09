@@ -39,7 +39,7 @@ To run your script as a systemd service, follow these steps:
     Type=simple
     ExecStart=/usr/local/bin/ca_csr_watcher.sh
     Restart=always
-    User=root
+    User=<your-ca-vm-username>
 
     [Install]
     WantedBy=multi-user.target
