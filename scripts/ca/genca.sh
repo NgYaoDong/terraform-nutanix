@@ -28,4 +28,4 @@ pki --self --ca --lifetime 3652 --in $key_file \
 
 # Print completion message
 echo "CA key generated in $key_file."
-echo "CA certificate generated generated in $cert_file."
+echo "CA certificate generated in $cert_file."
