@@ -1,5 +1,7 @@
 # terraform-nutanix
 
+[![GitHub](https://img.shields.io/badge/GitHub-NgYaoDong%2Fterraform--nutanix-blue?logo=github)](https://github.com/NgYaoDong/terraform-nutanix)
+
 This project automates the deployment of a network of Strongswan VPNs in a Nutanix environment using Terraform. It provisions client and gateway VMs, configures networking, and sets up VPN connectivity.
 
 ## Features
@@ -21,7 +23,7 @@ This project automates the deployment of a network of Strongswan VPNs in a Nutan
 1. **Clone the repository**
 
 2. **Set up the CA**
-   
+
    Follow the instructions in [`scripts/ca/`](scripts/ca/) to set up the CA properly.
 
 3. **Configure variables**
@@ -78,6 +80,13 @@ This project automates the deployment of a network of Strongswan VPNs in a Nutan
    terraform apply
    ```
 
+    Review the plan and confirm to create the resources.
+
+6. **Post-deployment**
+
+   After the VMs are up, you can access their console in Nutanix Prism Element with the username: `root` and password: `password`.
+
+   The Strongswan VPN should be automatically configured based on the scripts provided.
 
 ## Variables
 
