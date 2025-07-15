@@ -68,4 +68,4 @@ These scripts are called as part of the automated VPN deployment process. Entiti
 
 ## See Also
 
-- [`../entity/README.md`](../entity/README.md): For scripts used by VPN clients and gateways to generate CSRs and interact with the CA.
+- [`entity/`](../entity/): For scripts used by VPN clients and gateways to generate CSRs and interact with the CA.
